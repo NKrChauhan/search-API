@@ -1,0 +1,58 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block head %}
+<link href="https://fonts.googleapis.com/css?family=Pacifico" rel="stylesheet"> 
+{% endblock %}
+{% block title %}
+Animaze
+{% endblock %}
+{% block content %}
+<center class="container" style="padding-top: 1%;justify-content: center;align-items: center;margin-top: 5%;">
+    <div class="col-md-5 form-inline" >
+            <input class="form-control form-control-lg" id="q_search" type="text" placeholder="what do you want to search ?"/>
+            <button id="search_btn" onclick="fetchdata();" class = "btn btn-success form-control">search</button>
+    </div>
+    <div class="col-md-7" >
+        <table class="table table-striped">
+              <tr>
+                <td>Name</td>
+                <td id="name_anime"></td>
+              </tr>
+              <tr>
+                <td>Rating</td>
+                <td id="rating_anime"></td>
+              </tr>
+              <tr>
+                <td>Created on</td>
+                <td id="created_anime"></td>
+              </tr>
+              <tr>
+                <td>Description</td>
+                <td id="desc_anime"></td>
+              </tr>
+              <tr>
+                <td>Poster</td>
+                <td id="poster_anime"></td>
+              </tr>
+          </table>
+    </div>
+</center>
+<script>
+    function fetchdata(){
+        var q = document.getElementById("q_search").value
+        if(q===""){
+            alert("enter something");
+            return;
+        }
+        fetch('search/'+q+"/").then(res => res.json()).then(data => {
+            console.log(data)
+            document.getElementById("name_anime").innerHTML = data['name']
+            document.getElementById("rating_anime").innerHTML = data['rating']
+            document.getElementById("created_anime").innerHTML = data['created']
+            document.getElementById("desc_anime").innerHTML = data['description']
+            document.getElementById("poster_anime").innerHTML = "<img src=\'"+data['poster']+"\' height='400' />"
+        })
+        .catch((err)=> console.log(err));
+    }
+</script>
+{% endblock %}
