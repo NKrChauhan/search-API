@@ -12,27 +12,31 @@ Animaze
       <input class="form-control form-control-lg" id="q_search" type="text" placeholder="what do you want to search ?" style="width: 250px;"/>
       <button id="search_btn" onclick="fetchdata();" class = "btn btn-success form-control">search</button>
     </div>
-    <div class="col-md-7" >
+    <div class="col-md-7" style="background-color: aliceblue;">
         <table class="table table-striped">
+              <th>
+                <td>Movie Details</td>
+              </th>
               <tr>
+              <tr class='table-warning'>
                 <td>Name</td>
                 <td id="name_anime"></td>
               </tr>
-              <tr>
+              <tr class='table-warning'>
                 <td>Rated</td>
                 <td id="rating_anime"></td>
               </tr>
-              <tr>
+              <tr class='table-warning'>
                 <td>Year</td>
                 <td id="created_anime"></td>
               </tr>
-              <tr>
+              <tr class='table-warning'>
                 <td>Director</td>
                 <td id="desc_anime"></td>
               </tr>
             </table>
             <table id="ratings" class="table table-striped" >
-            <tr>
+            <tr class="bg-success">
               <td>Source of Rating</td>
               <td>Value</td>
             </tr>
@@ -48,9 +52,11 @@ Animaze
             document.getElementById("rating_anime").innerHTML = data['Rated']
             document.getElementById("created_anime").innerHTML = data['Year']
             document.getElementById("desc_anime").innerHTML = data['Director']
+            let reset_ratings = "<tr class='bg-success'><td>Source of Rating</td><td>Value</td></tr>"
+            document.getElementById("ratings").innerHTML = reset_ratings
             let s = data["Ratings"]
             s.forEach(element => {
-              document.getElementById("ratings").innerHTML += "<tr><td>"+element.Source+"</td><td>"+element.Value+"</td></tr>"
+              document.getElementById("ratings").innerHTML += "<tr class='table-success'><td>"+element.Source+"</td><td>"+element.Value+"</td></tr>"
             })
             
         })

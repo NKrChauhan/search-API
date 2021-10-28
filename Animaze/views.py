@@ -86,7 +86,7 @@ def make_json(movie_obj,rating_objs):
 def search_anime(request,q=None, *args, **kwargs):
         data = {}
         if q!=None and q != "" :
-                movie_obj = Movie.objects.filter(name=q)
+                movie_obj = Movie.objects.filter(name__icontains=q)
                 rating_objs=[]
                 if movie_obj.count() == 0:
                         data = requests.get(f"https://www.omdbapi.com/?apikey={api_key}&t=={q}")
