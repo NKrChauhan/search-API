@@ -9,8 +9,8 @@ Animaze
 {% block content %}
 <center class="container" style="padding-top: 1%;justify-content: center;align-items: center;margin-top: 5%;">
     <div class="col-md-5 form-inline" >
-            <input class="form-control form-control-lg" id="q_search" type="text" placeholder="what do you want to search ?"/>
-            <button id="search_btn" onclick="fetchdata();" class = "btn btn-success form-control">search</button>
+      <input class="form-control form-control-lg" id="q_search" type="text" placeholder="what do you want to search ?" style="width: 250px;"/>
+      <button id="search_btn" onclick="fetchdata();" class = "btn btn-success form-control">search</button>
     </div>
     <div class="col-md-7" >
         <table class="table table-striped">
@@ -19,38 +19,40 @@ Animaze
                 <td id="name_anime"></td>
               </tr>
               <tr>
-                <td>Rating</td>
+                <td>Rated</td>
                 <td id="rating_anime"></td>
               </tr>
               <tr>
-                <td>Created on</td>
+                <td>Year</td>
                 <td id="created_anime"></td>
               </tr>
               <tr>
-                <td>Description</td>
+                <td>Director</td>
                 <td id="desc_anime"></td>
               </tr>
-              <tr>
-                <td>Poster</td>
-                <td id="poster_anime"></td>
-              </tr>
+            </table>
+            <table id="ratings" class="table table-striped" >
+            <tr>
+              <td>Source of Rating</td>
+              <td>Value</td>
+            </tr>
           </table>
     </div>
 </center>
 <script>
     function fetchdata(){
         var q = document.getElementById("q_search").value
-        if(q===""){
-            alert("enter something");
-            return;
-        }
         fetch('search/'+q+"/").then(res => res.json()).then(data => {
             console.log(data)
-            document.getElementById("name_anime").innerHTML = data['name']
-            document.getElementById("rating_anime").innerHTML = data['rating']
-            document.getElementById("created_anime").innerHTML = data['created']
-            document.getElementById("desc_anime").innerHTML = data['description']
-            document.getElementById("poster_anime").innerHTML = "<img src=\'"+data['poster']+"\' height='400' />"
+            document.getElementById("name_anime").innerHTML = data['Title']
+            document.getElementById("rating_anime").innerHTML = data['Rated']
+            document.getElementById("created_anime").innerHTML = data['Year']
+            document.getElementById("desc_anime").innerHTML = data['Director']
+            let s = data["Ratings"]
+            s.forEach(element => {
+              document.getElementById("ratings").innerHTML += "<tr><td>"+element.Source+"</td><td>"+element.Value+"</td></tr>"
+            })
+            
         })
         .catch((err)=> console.log(err));
     }

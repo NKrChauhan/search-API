@@ -57,27 +57,46 @@
         #     
 #         },
 #       ]
+from django.http.response import JsonResponse
 from rest_framework.permissions import AllowAny
 from rest_framework.decorators import api_view,permission_classes
 from rest_framework.response import Response
+from django.http import JsonResponse
 from rest_framework import status
 from django.db.models import Q
 import requests
-from Animaze.models import Anime
-from Animaze.serializers import searchDisplay
+from Animaze.models import Movie,Ratings
+import json
+
+api_key = "c2727ac4"
+
+def make_json(movie_obj,rating_objs):
+        data = {}
+        data["Title"]=movie_obj.name
+        data["Rated"]=movie_obj.rated
+        data["Year"]= movie_obj.year
+        data["Director"]=movie_obj.director
+        data["Ratings"]=[]
+        for x in rating_objs:
+                data["Ratings"].append({"Source":x.source,"Value":x.value})
+        return data
 
 @api_view(['GET'])
 @permission_classes([AllowAny])
-def search_anime(q=None, *args, **kwargs):
+def search_anime(request,q=None, *args, **kwargs):
         data = {}
-        if q!=None and q == "" :
-                lookup=Q(name__icontains=q)
-                data_db = Anime.objects.filter(lookup)
-                if data_db.count() == 0:
-                        x = requests.get(f"https://kitsu.io/api/edge//anime?filter[text]={q}")
-                        data = x.json()["data"][0]['attributes']
-                        data = Anime.objects.create(name = data['canonicalTitle'],rating=data['averageRating'],created=data['createdAt'],description=data['description'],poster=data['posterImage']['large'])
-                        data = searchDisplay(instance = data)        
+        if q!=None and q != "" :
+                movie_obj = Movie.objects.filter(name=q)
+                rating_objs=[]
+                if movie_obj.count() == 0:
+                        data = requests.get(f"https://www.omdbapi.com/?apikey={api_key}&t=={q}")
+                        data = data.json()
+                        movie_obj = Movie.objects.create(name = data["Title"],rated=data["Rated"],year=data["Year"],director=data["Director"])
+                        rating = data["Ratings"]
+                        for x in rating:
+                                rating_objs.append(Ratings.objects.create(movie=movie_obj,source=x["Source"],value=x["Value"]))   
                 else:
-                        data = searchDisplay(instance = data_db.first())
-        return Response(data = data.data, status=status.HTTP_200_OK)
+                        movie_obj = movie_obj.first()
+                        rating_objs = Ratings.objects.filter(movie=movie_obj)
+                data = make_json(movie_obj=movie_obj,rating_objs=rating_objs)
+        return JsonResponse(data,safe=False)
